@@ -6,6 +6,7 @@ locale.setlocale(locale.LC_TIME, 'pt_PT.UTF-8')
 
 def obter_resposta(texto: str) -> str:
     comando: str = texto.lower()
+
     # if comando in ('olá', 'boa tarde', 'bom dia'):
     #     return 'Olá tudo bem!'
     # if comando == 'como estás':
@@ -31,6 +32,7 @@ def obter_resposta(texto: str) -> str:
         ('que horas são', 'horas'): f'São: {datetime.now():%H:%M} horas',
         ('data', 'dia'): f'Hoje é dia: {datetime.now():%d-%m-%Y}',
         ('que dia da semana é hoje?', 'dia da semana'): f'Hoje é {datetime.now().strftime("%A")}.',
+        ('faltam quantos dias para o natal?', 'dias para o natal'): dias_para_o_natal(),
         ('bye', 'adeus', 'tchau'): 'Gostei de falar contigo! Até breve...'
     }
 
@@ -49,6 +51,13 @@ def obter_resposta(texto: str) -> str:
 
     return f'Desculpa, não entendi a questão! {texto}'
 
+def dias_para_o_natal():
+    hoje = datetime.now()
+    natal = datetime(hoje.year, 12, 25)
+    if hoje > natal:
+        natal = datetime(hoje.year + 1, 12, 25)
+    dias_faltando = (natal - hoje).days
+    return f'Faltam {dias_faltando}'
 
 def chat() -> None:
     print('Bem-vindo ao ChatBot!')
