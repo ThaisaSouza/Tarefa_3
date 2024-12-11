@@ -4,6 +4,17 @@ import locale
 
 locale.setlocale(locale.LC_TIME, 'pt_PT.UTF-8')
 
+FERIADOS = {
+    1: [1],  # Janeiro 1 - Ano Novo
+    4: [25], # Abril 25 - Liberdade
+    5: [1],  # Maio 1 - Dia do Trabalhador
+    6: [10], # Junho 10 - Dia de Portugal
+    8: [15], # Agosto 15 - Assunção de Nossa Senhora
+    10: [5], # Outubro 5 - Implantação da República
+    11: [1], # Novembro 1 - Dia de Todos os Santos
+    12: [25], # Dezembro 25 - Natal
+}
+
 def obter_resposta(texto: str) -> str:
     comando: str = texto.lower()
 
@@ -42,6 +53,9 @@ def obter_resposta(texto: str) -> str:
                 return resposta
         elif chave in comando:
             return resposta
+        
+    if 'feriados no mês' in comando or 'quantos feriados' in comando:
+        return feriados_no_mes_atual()
 
     if 'horas' in comando:
         return f'São: {datetime.now():%H:%M} horas'
@@ -58,6 +72,16 @@ def dias_para_o_natal():
         natal = datetime(hoje.year + 1, 12, 25)
     dias_faltando = (natal - hoje).days
     return f'Faltam {dias_faltando}'
+
+def feriados_no_mes_atual():
+    hoje = datetime.now()
+    mes_atual = hoje.month
+
+    if mes_atual in FERIADOS:
+        feriados_mes = FERIADOS[mes_atual]
+        return f'No mês {hoje.strftime("%B")}, existem {len(feriados_mes)} feriado(s): {", ".join(str(f) for f in feriados_mes)}.'
+    else:
+        return f'No mês {hoje.strftime("%B")}, não há feriados conhecidos.'
 
 def chat() -> None:
     print('Bem-vindo ao ChatBot!')
