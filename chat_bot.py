@@ -48,7 +48,11 @@ def obter_signo(data_nascimento: str) -> str:
 
 def obter_estacao(data: str) -> str:
     try:
-        data = datetime.strptime(data, "%d-%m-%Y")
+        
+        if len(data.split("-")[-1]) == 2:
+            data = datetime.strptime(data, "%d-%m-%y")
+        else:
+            data = datetime.strptime(data, "%d-%m-%Y")
     except ValueError:
         return "Desculpa, não consegui entender a data. Por favor, use o formato dd-mm-aaaa."
     
@@ -159,3 +163,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+
