@@ -1,5 +1,8 @@
 import os
 from datetime import datetime
+import locale
+
+locale.setlocale(locale.LC_TIME, 'pt_PT.UTF-8')
 
 def obter_resposta(texto: str) -> str:
     comando: str = texto.lower()
@@ -25,6 +28,9 @@ def obter_resposta(texto: str) -> str:
         'como estás': 'Estou bem, obrigado!',
         'como te chamas': 'O meu nome é: Bot :)',
         'tempo': 'Está um dia de sol!',
+        ('que horas são', 'horas'): f'São: {datetime.now():%H:%M} horas',
+        ('data', 'dia'): f'Hoje é dia: {datetime.now():%d-%m-%Y}',
+        ('que dia da semana é hoje?', 'dia da semana'): f'Hoje é {datetime.now().strftime("%A")}.',
         ('bye', 'adeus', 'tchau'): 'Gostei de falar contigo! Até breve...'
     }
 
