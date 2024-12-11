@@ -28,7 +28,7 @@ SIGNOS = [
     ("Libra", (9, 23), (10, 22)),
     ("Escorpião", (10, 23), (11, 21)),
     ("Sagitário", (11, 22), (12, 21)),
-    ("Capricórnio", (12, 22), (12, 31)), 
+    ("Capricórnio", (12, 22), (12, 31)),
 ]
 
 def obter_signo(data_nascimento: str) -> str:
@@ -46,25 +46,27 @@ def obter_signo(data_nascimento: str) -> str:
     
     return "Não consegui determinar o teu signo."
 
-def obter_resposta(texto: str, espera_data_nascimento=False) -> str:
+def obter_estacao(data: str) -> str:
+    try:
+        data = datetime.strptime(data, "%d-%m-%Y")
+    except ValueError:
+        return "Desculpa, não consegui entender a data. Por favor, use o formato dd-mm-aaaa."
+    
+    mes = data.month
+    dia = data.day
+
+    if (mes == 3 and dia >= 21) or (mes > 3 and mes < 6) or (mes == 6 and dia <= 20):
+        return "A estação será Primavera."
+    elif (mes == 6 and dia >= 21) or (mes > 6 and mes < 9) or (mes == 9 and dia <= 20):
+        return "A estação será Verão."
+    elif (mes == 9 and dia >= 21) or (mes > 9 and mes < 12) or (mes == 12 and dia <= 20):
+        return "A estação será Outono."
+    else:
+        return "A estação será Inverno."
+
+def obter_resposta(texto: str, espera_data_nascimento=False, espera_estacao=False) -> str:
     comando: str = texto.lower()
 
-    # if comando in ('olá', 'boa tarde', 'bom dia'):
-    #     return 'Olá tudo bem!'
-    # if comando == 'como estás':
-    #     return 'Estou bem, obrigado!'
-    # if comando == 'como te chamas':
-    #     return 'O meu nome é: Bot :)'
-    # if comando == 'tempo':
-    #     return 'Está um dia de sol!'
-    # if comando in ('bye', 'adeus', 'tchau'):
-    #     return 'Gostei de falar contigo! Até breve...'
-    # if 'horas' in comando:
-    #     return f'São: {datetime.now():%H:%M} horas'
-    # if 'data' in comando:
-    #     return f'Hoje é dia: {datetime.now():%d-%m-%Y}'
-
-    # return f'Desculpa, não entendi a questão! {texto}'
     respostas = {
         ('olá', 'boa tarde', 'bom dia'): 'Olá tudo bem!',
         'como estás': 'Estou bem, obrigado!',
@@ -84,26 +86,22 @@ def obter_resposta(texto: str, espera_data_nascimento=False) -> str:
         elif chave in comando:
             return resposta
 
-
-    if 'qual é o meu signo' in comando or 'signo' in comando:
-        return "Qual é a tua data de nascimento? Por favor, diga no formato dd-mm-aaaa."
-    
-
     if espera_data_nascimento:
         return obter_signo(comando)
     
+    if espera_estacao:
+        return obter_estacao(comando)
 
+    if 'qual é o meu signo' in comando or 'signo' in comando:
+        return "Qual é a tua data de nascimento? Por favor, diga no formato dd-mm-aaaa."
+  
+    if 'qual estação do ano será' in comando or 'estação do ano' in comando:
+        return "Qual é a data que desejas saber a estação do ano? Por favor, diga no formato dd-mm-aaaa."
+    
     if 'feriados no mês' in comando or 'quantos feriados' in comando:
         return feriados_no_mes_atual()
 
-
-    if 'horas' in comando:
-        return f'São: {datetime.now():%H:%M} horas'
-
-    if 'data' in comando:
-        return f'Hoje é dia: {datetime.now():%d-%m-%Y}'
-
-    return f'Desculpa, não entendi a questão! {texto}'
+    return f"Desculpa, não entendi a questão! {texto}"
 
 def dias_para_o_natal():
     hoje = datetime.now()
@@ -129,21 +127,23 @@ def chat() -> None:
     name: str = input('Bot: Como te chamas? ')
     print(f'Bot: Olá, {name}! \n Como te posso ajudar?')
 
-    espera_data_nascimento = False 
+    espera_data_nascimento = False
+    espera_estacao = False
 
     while True:
         user_input: str = input('Tu: ')
-        resposta: str = obter_resposta(user_input, espera_data_nascimento)
-
-        if 'qual é o meu signo' in user_input or 'signo' in user_input:
-            espera_data_nascimento = True
-            print(f'Bot: {resposta}')
-            continue
-
         if espera_data_nascimento:
-            print(f'Bot: {resposta}')
+            resposta = obter_signo(user_input)
             espera_data_nascimento = False
-            continue
+        elif espera_estacao:
+            resposta = obter_estacao(user_input)
+            espera_estacao = False
+        else:
+            resposta = obter_resposta(user_input)
+            if 'qual é o meu signo' in user_input or 'signo' in user_input:
+                espera_data_nascimento = True
+            elif 'qual estação do ano será' in user_input or 'estação do ano' in user_input:
+                espera_estacao = True
         
         print(f'Bot: {resposta}')
 
@@ -153,11 +153,9 @@ def chat() -> None:
     print('Chat acabou')
     print()
 
-
 def main() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
     chat()
-
 
 if __name__ == '__main__':
     main()
